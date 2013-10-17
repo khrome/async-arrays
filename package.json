@@ -1,0 +1,30 @@
+{
+    "name": "async-arrays",
+    "homepage": "https://github.com/khrome/async-arrays",
+    "version": "0.0.1-alpha",
+    "main": "async-arrays.js",
+    "description": "",
+    "keywords": [
+        "array",
+        "async"
+    ],
+    "author": "Abbey Hawk Sparrow <@khrome> (http://patternweaver.com)",
+    "contributors": [],
+    "bugs": {
+        "url": "https://github.com/khrome/async-arrays/issues"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/khrome/async-arrays.git"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "mocha": "*",
+        "should": "*"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    }
+}
