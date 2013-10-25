@@ -29,7 +29,7 @@ forAllEmissions : execute all jobs in parallel
     
 forAllEmissionsInPool : execute all jobs in parallel up to a maximum #, then queue for later
 
-    [].forAllEmissionsInPool(function(item, index, done){
+    [].forAllEmissionsInPool(poolSize, function(item, index, done){
         somethingAsynchronous(function(){
             done();
         });
