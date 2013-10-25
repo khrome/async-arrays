@@ -31,7 +31,7 @@
     };
 
     //allows you to act on each member in a chain in parallel
-    if(Array.prototype.forAllEmissions) Array.prototype.forAllEmissions = function(callback, complete){
+    if(!Array.prototype.forAllEmissions) Array.prototype.forAllEmissions = function(callback, complete){
         var a = {count : 0};
         var collection = this;
         var returnArgs = [];
@@ -44,7 +44,7 @@
             a.count--;
             if(a.count == 0 && complete) complete.apply(complete, returnArgs);
         };
-        object.forEach(collection, function(value, key){
+        this.forEach(function(value, key){
             begin();
             callback(value, key, function(){
                finish(key, Array.prototype.slice.apply(arguments, [0])); 
@@ -53,17 +53,17 @@
     };
 
     //allows you to act on each member in a pool, with a maximum number of active jobs until complete
-    if(Array.prototype.forAllEmissionsInPool) Array.prototype.forAllEmissionsInPool = function(poolSize, callback, complete){
+    if(!Array.prototype.forAllEmissionsInPool) Array.prototype.forAllEmissionsInPool = function(poolSize, callback, complete){
         var a = {count : 0};
         var collection = this;
         var queue = [];
         var activeCount = 0;
         var returnArgs = [];
         var begin = function(action){
-            a.count++;
-            if(activeCount >= poolSize){
+            if(a.count >= poolSize){
                 queue.push(action)
             }else{
+                a.count++;
                 action();
             }
         };
@@ -72,10 +72,11 @@
             if(args.length > 1) returnArgs[index] = args;
             a.count--;
             if(queue.length > 0){
+                a.count++;
                 queue.shift()();
             }else if(a.count == 0 && complete) complete.apply(complete, returnArgs);
         };
-        object.forEach(collection, function(value, key){
+        this.forEach(function(value, key){
             begin(function(){
                 callback(value, key, function(){
                    finish(key, Array.prototype.slice.apply(arguments, [0])); 
