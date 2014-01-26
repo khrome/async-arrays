@@ -1,5 +1,5 @@
 var should = require("should");
-var art = require('./async-arrays');
+require('./async-arrays').proto();
 
 describe('async-arrays', function(){
     
