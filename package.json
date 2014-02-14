@@ -1,9 +1,9 @@
 {
     "name": "async-arrays",
     "homepage": "https://github.com/khrome/async-arrays",
-    "version": "0.0.2-alpha",
+    "version": "0.0.3-alpha",
     "main": "async-arrays.js",
-    "description": "",
+    "description": "Async control for arrays",
     "keywords": [
         "array",
         "async"
