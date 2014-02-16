@@ -1,5 +1,13 @@
-(function(){
-    module.exports = {
+(function(root, factory){
+    if (typeof define === 'function' && define.amd){
+        define([], factory);
+    }else if(typeof exports === 'object'){
+        module.exports = factory();
+    }else{
+        root.AsyncArrays = factory();
+    }
+}(this, function(){
+    var asyncarray = {
         forAllEmissionsInPool : function(array, poolSize, callback, complete){
             var a = {count : 0};
             var collection = array;
@@ -104,33 +112,34 @@
             // convenience method that performs a forEach with no closure at the speed of a 'for'
             // be careful, as this is subject to the same async gotchas as the language 'for'
             if(!Array.prototype.uForEach) Array.prototype.uForEach = function(callback){
-                return module.exports.uForEach(this, callback);
+                return asyncarray.uForEach(this, callback);
             };
 
             // allows you to act on each member in an array one at a time 
             // (while being able to perform asynchronous tasks internally)
             if(!Array.prototype.forEachEmission) Array.prototype.forEachEmission = function(callback, complete){
-                return module.exports.forEachEmission(this, callback, complete);
+                return asyncarray.forEachEmission(this, callback, complete);
             };
 
             //allows you to act on each member in a chain in parallel
             if(!Array.prototype.forAllEmissions) Array.prototype.forAllEmissions = function(callback, complete){
-                return module.exports.forAllEmissions(this, callback, complete);
+                return asyncarray.forAllEmissions(this, callback, complete);
             };
 
             //allows you to act on each member in a pool, with a maximum number of active jobs until complete
             if(!Array.prototype.forAllEmissionsInPool) Array.prototype.forAllEmissionsInPool = function(poolSize, callback, complete){
-                return module.exports.forAllEmissionsInPool(this, poolSize, callback, complete);
+                return asyncarray.forAllEmissionsInPool(this, poolSize, callback, complete);
             };
             if(!Array.prototype.combine) Array.prototype.combine = function(array){
-                return module.exports.combine(this, array);
+                return asyncarray.combine(this, array);
             };
             if(!Array.prototype.contains) Array.prototype.contains = function(item){
-                return module.exports.contains(this, item);
+                return asyncarray.contains(this, item);
             };
             if(!Array.prototype.erase) Array.prototype.erase = function(field){
-                return module.exports.erase(this, field);
+                return asyncarray.erase(this, field);
             };
         }
-    }
-})();
+    };
+    return asyncarray;
+}));
