@@ -54,9 +54,11 @@
             };
             array.forEach(function(value, key){
                 begin();
-                callback(value, key, function(){
-                   finish(key, Array.prototype.slice.apply(arguments, [0])); 
-                });
+                setTimeout(function(){
+                    callback(value, key, function(){
+                       finish(key, Array.prototype.slice.apply(arguments, [0])); 
+                    });
+                },1);
             });
         },
         forEachEmission : function(array, callback, complete){
@@ -67,13 +69,15 @@
                 if(a.count >= collection.length){
                     if(complete) complete.apply(complete, returnArgs);
                 }else{
-                    callback(collection[a.count], a.count, function(){
-                        var args = Array.prototype.slice.apply(arguments, [0]);
-                        if(args.length == 1) returnArgs[a.count] = args[0];
-                        if(args.length > 1) returnArgs[a.count] = args;
-                        a.count++;
-                        fn(collection, callback, complete);
-                    });
+                    setTimeout(function(){
+                        callback(collection[a.count], a.count, function(){
+                            var args = Array.prototype.slice.apply(arguments, [0]);
+                            if(args.length == 1) returnArgs[a.count] = args[0];
+                            if(args.length > 1) returnArgs[a.count] = args;
+                            a.count++;
+                            fn(collection, callback, complete);
+                        });
+                    },1);
                 }
             };
             fn(collection, callback, complete);
