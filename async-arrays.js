@@ -38,6 +38,7 @@
                     });
                 });
             });
+            if(a.count == 0 && complete) complete.apply(complete, returnArgs);
         },
         forAllEmissions : function(array, callback, complete){
             var a = {count : 0};
@@ -60,6 +61,7 @@
                     });
                 },1);
             });
+            if(a.count == 0 && complete) complete.apply(complete, returnArgs);
         },
         forEachEmission : function(array, callback, complete){
             var a = {count : 0};
