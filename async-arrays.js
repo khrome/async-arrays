@@ -112,6 +112,7 @@
             while((arr.indexOf(field)) != -1){ //get 'em all
                 arr.splice(index, 1); //delete the one we found
             }
+            return arr;
         },
         //TODO: mutators
         proto : function(){
