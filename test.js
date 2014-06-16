@@ -19,6 +19,29 @@ describe('async-arrays', function(){
                 complete();
             });
         });
+        
+        it('can doubly nest iterations', function(complete){
+            ['a', 'b', 'c', 'd', 'e'].forEachEmission(function(item, index, done){
+                var ind = index;
+                ['f', 'g', 'h', 'i', 'j'].forEachEmission(function(subitem, subindex, finish){
+                    finish(subitem);
+                }, function(f, g, h, i, j){
+                    f.should.equal('f');
+                    g.should.equal('g');
+                    h.should.equal('h');
+                    i.should.equal('i');
+                    j.should.equal('j');
+                    done(item);
+                });
+            }, function(a, b, c, d, e){
+                a.should.equal('a');
+                b.should.equal('b');
+                c.should.equal('c');
+                d.should.equal('d');
+                e.should.equal('e');
+                complete();
+            });
+        });
     
     });
     
@@ -36,6 +59,22 @@ describe('async-arrays', function(){
             }, function(){
                 count.should.equal(0);
                 complete();
+            });
+        });
+        
+        it('can doubly nest iterations', function(complete){
+            var rtrn;
+            ['a', 'b', 'c', 'd', 'e'].forAllEmissions(function(item, index, done){
+                ['f', 'g', 'h', 'i', 'j'].forAllEmissions(function(item, index, finish){
+                    finish();
+                }, function(){
+                    done();
+                });
+            }, function(){
+                should.not.exist(rtrn);
+                rtrn = setTimeout(function(){
+                    complete();
+                }, 500);
             });
         });
     
