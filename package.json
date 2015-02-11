@@ -1,7 +1,7 @@
 {
     "name": "async-arrays",
     "homepage": "https://github.com/khrome/async-arrays",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "main": "async-arrays.js",
     "description": "Async control for arrays",
     "keywords": [
@@ -18,7 +18,9 @@
         "type": "git",
         "url": "git://github.com/khrome/async-arrays.git"
     },
-    "dependencies": {},
+    "dependencies": {
+        "sift" : "*"
+    },
     "devDependencies": {
         "mocha": "*",
         "should": "*"

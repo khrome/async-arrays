@@ -1,12 +1,12 @@
 (function(root, factory){
     if (typeof define === 'function' && define.amd){
-        define([], factory);
+        define(['sift'], factory);
     }else if(typeof exports === 'object'){
-        module.exports = factory();
+        module.exports = factory(require('sift'));
     }else{
-        root.AsyncArrays = factory();
+        root.AsyncArrays = factory(root.Sift);
     }
-}(this, function(){
+}(this, function(sift){
     var asyncarray = {
         forAllEmissionsInPool : function(array, poolSize, callback, complete){
             var a = {count : 0};
@@ -31,45 +31,39 @@
                     queue.shift()();
                 }else if(a.count == 0 && complete) complete.apply(complete, returnArgs);
             };
-            array.forEach(function(value, key){
+            Array.prototype.forEach.apply(array, [function(value, key){
                 begin(function(){
                     callback(value, key, function(){
                        finish(key, Array.prototype.slice.apply(arguments, [0])); 
                     });
                 });
-            });
+            }]);
             if(a.count == 0 && complete) complete.apply(complete, returnArgs);
         },
-        forAllEmissions : function(array, callback, complete){
-            var a = {count : 0};
-            var collection = array;
-            var returnArgs = [];
-            var begin = function(){
-                a.count++;
-            };
-            var finish = function(index, args){
-                if(args.length == 1) returnArgs[index] = args[0];
-                if(args.length > 1) returnArgs[index] = args;
-                a.count--;
-                if(a.count == 0 && complete) complete.apply(complete, returnArgs);
-            };
-            array.forEach(function(value, key){
-                begin();
+        forAllEmissions : function(list, callback, complete){
+            var ref = {count : 0};
+            Array.prototype.forEach.apply(list, [function(value, key){
+                ref.count++;
                 setTimeout(function(){
                     callback(value, key, function(){
-                       finish(key, Array.prototype.slice.apply(arguments, [0])); 
+                            ref.count--;
+                            if(ref.count < 0) throw new Error('continued iterating past stop');
+                            if(ref.count == 0) return complete();
                     });
                 },1);
-            });
-            if(a.count == 0 && complete) complete.apply(complete, returnArgs);
+            }]);
+            if(!list.length) complete();
         },
         forEachEmission : function(array, callback, complete){
             var a = {count : 0};
             var collection = array;
             var returnArgs = [];
+            var len = collection.length;
             var fn = function(collection, callback, complete){
                 if(a.count >= collection.length){
-                    if(complete) complete.apply(complete, returnArgs);
+                    setTimeout(function(){
+                        if(complete) complete.apply(complete, returnArgs);
+                    },1); return;
                 }else{
                     setTimeout(function(){
                         callback(collection[a.count], a.count, function(){
@@ -92,27 +86,48 @@
         },
         combine : function(thisArray, thatArray){ //parallel
             var result = [];
-            array.forEach(thatArray, function(value, key){
-                result.push(value);
-            });
+            Array.prototype.forEach.apply(thisArray, [function(value, key){
+                if(result.indexOf[value] === -1) result.push(value);
+            }]);
+            Array.prototype.forEach.apply(thatArray, [function(value, key){
+                if(result.indexOf[value] === -1) result.push(value);
+            }]);
             return result;
         },
         contains : function(haystack, needle){
             if(typeof needle == 'array'){
                 result = false;
-                needle.forEach(function(pin){
+                Array.prototype.forEach.apply(needle, [function(pin){
                     result = result || object.contains(haystack, pin);
-                });
+                }]);
                 return result;
             }
             else return haystack.indexOf(needle) != -1;
         },
+        delta : function(a, b){
+            var delta = [];
+            Array.prototype.forEach.apply(a, [function(item){
+                if(b.indexOf(item) != -1) delta.push(item);
+            }]);
+            Array.prototype.forEach.apply(b, [function(item){
+                if(a.indexOf(item) != -1 && delta.indexOf(item) == -1) delta.push(item);
+            }]);
+            return delta;
+        },
         erase : function(arr, field){
-            var index;
-            while((arr.indexOf(field)) != -1){ //get 'em all
-                arr.splice(index, 1); //delete the one we found
+            if(typeof field != 'object'){
+                var index;
+                while((arr.indexOf(field)) != -1){ //get 'em all
+                    arr.splice(index, 1); //delete the one we found
+                }
+                return arr;
+            }else{
+                var filter = sift(field);
+                for(var i = arr.length; i--; ){
+                    if(filter.test(arr[i])) arr.splice(i, 1);
+                }
+                return arr;
             }
-            return arr;
         },
         //TODO: mutators
         proto : function(){
