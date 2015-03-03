@@ -114,25 +114,34 @@
             }]);
             return delta;
         },
+        //mutators (return modified elements)
         erase : function(arr, field){
             if(typeof field != 'object'){
                 var index;
-                while((arr.indexOf(field)) != -1){ //get 'em all
+                var item;
+                while((index = arr.indexOf(field)) != -1){ //get 'em all
+                    item = arr[index];
                     arr.splice(index, 1); //delete the one we found
                 }
-                return arr;
+                return item;
             }else{
                 var filter = sift(field);
+                var filtered = [];
                 for(var i = arr.length; i--; ){
-                    if(filter.test(arr[i])) arr.splice(i, 1);
+                    if(filter.test(arr[i])){
+                        filtered.push(arr[i]);
+                        arr.splice(i, 1);
+                    }
                 }
-                return arr;
+                return filtered;
             }
         },
-        //TODO: mutators
+        empty : function(arr){
+            var removed = arr.slice(0);
+            arr.splice(0, arr.length);
+            return removed;
+        },
         proto : function(){
-            // convenience method that performs a forEach with no closure at the speed of a 'for'
-            // be careful, as this is subject to the same async gotchas as the language 'for'
             if(!Array.prototype.uForEach) Array.prototype.uForEach = function(callback){
                 return asyncarray.uForEach(this, callback);
             };
@@ -159,6 +168,9 @@
                 return asyncarray.contains(this, item);
             };
             if(!Array.prototype.erase) Array.prototype.erase = function(field){
+                return asyncarray.erase(this, field);
+            };
+            if(!Array.prototype.empty) Array.prototype.empty = function(field){
                 return asyncarray.erase(this, field);
             };
         }
