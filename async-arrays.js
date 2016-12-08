@@ -54,6 +54,18 @@
             }]);
             if(!list.length) complete();
         },
+        mapEmissions : function(list, callback, complete, parallel){
+            var results = [];
+            var fnName = parallel?'forAllEmissions':'forEachEmission';
+            asyncarray[fnName](list, function(item, index, done){
+                callback(item, function(item){
+                   if(item) results.push(item);
+                   done();
+                });
+            }, function(){
+                complete(results);
+            });
+        },
         forEachEmission : function(array, callback, complete){
             var a = {count : 0};
             var collection = array;
@@ -148,19 +160,32 @@
 
             // allows you to act on each member in an array one at a time 
             // (while being able to perform asynchronous tasks internally)
-            if(!Array.prototype.forEachEmission) Array.prototype.forEachEmission = function(callback, complete){
-                return asyncarray.forEachEmission(this, callback, complete);
-            };
+            if(!Array.prototype.forEachEmission){
+                Array.prototype.forEachEmission = function(callback, complete){
+                    return asyncarray.forEachEmission(this, callback, complete);
+                };
+            }
 
             //allows you to act on each member in a chain in parallel
-            if(!Array.prototype.forAllEmissions) Array.prototype.forAllEmissions = function(callback, complete){
-                return asyncarray.forAllEmissions(this, callback, complete);
-            };
+            if(!Array.prototype.forAllEmissions){
+                Array.prototype.forAllEmissions = function(callback, complete){
+                    return asyncarray.forAllEmissions(this, callback, complete);
+                };
+            }
 
             //allows you to act on each member in a pool, with a maximum number of active jobs until complete
-            if(!Array.prototype.forAllEmissionsInPool) Array.prototype.forAllEmissionsInPool = function(poolSize, callback, complete){
-                return asyncarray.forAllEmissionsInPool(this, poolSize, callback, complete);
-            };
+            if(!Array.prototype.forAllEmissionsInPool){
+                Array.prototype.forAllEmissionsInPool = function(poolSize, callback, complete){
+                    return asyncarray.forAllEmissionsInPool(this, poolSize, callback, complete);
+                };
+            }
+            
+            //map an array, asynchronously
+            if(!Array.prototype.mapEmissions){
+                Array.prototype.mapEmissions = function(poolSize, callback, complete){
+                    return asyncarray.mapEmissions(this, poolSize, callback, complete);
+                };
+            }
             if(!Array.prototype.combine) Array.prototype.combine = function(array){
                 return asyncarray.combine(this, array);
             };
@@ -175,5 +200,15 @@
             };
         }
     };
+    asyncarray.forEachBatch = asyncarray.forAllEmissionsInPool
+    asyncarray.forEach = asyncarray.forAllEmissionsInPool
+    asyncarray.forAll = asyncarray.forAllEmissionsInPool
+    asyncarray.map = asyncarray.mapEmissions
+    asyncarray.map.each = function(list, callback, complete){
+        return asyncarray.mapEmissions(list, callback, complete);
+    }
+    asyncarray.map.all = function(list, callback, complete){
+        return asyncarray.mapEmissions(list, callback, complete, true);
+    }
     return asyncarray;
 }));

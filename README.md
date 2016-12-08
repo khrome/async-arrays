@@ -1,7 +1,7 @@
 async-arrays.js
 ===============
 
-prototype extensions for Array when using that data asynchronously, with utilities from prime-ext
+Flow control and array utility.
 
 Usage
 -----
@@ -9,14 +9,58 @@ I find, most of the time, my asynchronous logic emerges from an array and I real
 
 you can either retain an instance and use it that way:
 
-    var arrayTool = require('async-arrays');
-    arrayTool.forEachEmission(array, iterator, calback);
+    var arrays = require('async-arrays');
+    arrays.forEach(array, iterator, calback);
     
-or you can just attach to the prototype:
+
+`arrays.forEach` : execute serially
+
+    arrays.forEach(array, function(item, index, done){
+        somethingAsynchronous(function(){
+            done();
+        });
+    }, function(){
+        //we're all done!
+    });
+    
+`arrays.forAll` : execute all jobs in parallel
+
+    arrays.forAll(array, function(item, index, done){
+        somethingAsynchronous(function(){
+            done();
+        });
+    }, function(){
+        //we're all done!
+    });
+    
+`arrays.forEachBatch` : execute all jobs in parallel up to a maximum #, then queue
+
+    arrays.forEachBatch(array, batchSize, function(item, index, done){
+        somethingAsynchronous(function(){
+            done();
+        });
+    }, function(){
+        //we're all done!
+    });
+    
+`arrays.map` : map all elements of the array, but allow for asynchronous interaction. Alternatives are: `arrays.map.each`(sequential) `arrays.map.all`(parallel)
+
+    arrays.map(array, function(item, index, done){
+        somethingAsynchronous(function(newItem){
+            done(newItem);
+        });
+    }, function(mappedData){
+        //we're all done!
+    });
+
+
+Prototype Usage
+---------------
+Attach to the prototype (using names which don't collide with the browser implementations):
 
     require('async-arrays').proto();
 
-forEachEmission : execute serially
+`forEachEmission` : execute serially
 
     [].forEachEmission(function(item, index, done){
         somethingAsynchronous(function(){
@@ -26,7 +70,7 @@ forEachEmission : execute serially
         //we're all done!
     });
     
-forAllEmissions : execute all jobs in parallel
+`forAllEmissions` : execute all jobs in parallel
 
     [].forAllEmissions(function(item, index, done){
         somethingAsynchronous(function(){
@@ -36,7 +80,7 @@ forAllEmissions : execute all jobs in parallel
         //we're all done!
     });
     
-forAllEmissionsInPool : execute all jobs in parallel up to a maximum #, then queue for later
+`forAllEmissionsInPool` : execute all jobs in parallel up to a maximum #, then queue for later
 
     [].forAllEmissionsInPool(poolSize, function(item, index, done){
         somethingAsynchronous(function(){
@@ -45,14 +89,29 @@ forAllEmissionsInPool : execute all jobs in parallel up to a maximum #, then que
     }, function(){
         //we're all done!
     });
+
+`mapEmissions` : map all elements of the array, but allow for asynchronous interaction
+
+    [].mapEmissions(function(item, index, done){
+        somethingAsynchronous(function(newItem){
+            done(newItem);
+        });
+    }, function(mappedData){
+        //we're all done!
+    });
     
-Utility functions(not mutators):
+###Utility functions
+**non mutating**
 
     ['dog', 'cat', 'mouse'].contains('cat') //returns true;
 
     ['dog', 'cat'].combine(['mouse']) //returns ['dog', 'cat', 'mouse'];
     
-    ['dog', 'cat', 'mouse'].erase('cat') //returns ['dog', 'mouse'];
+**mutators**
+    
+    ['dog', 'cat', 'mouse'].erase('cat') //mutates the array to ['dog', 'mouse'];
+    
+    ['dog', 'cat', 'mouse'].empty('cat') //mutates the array to [];
     
 
 That's just about it, and even better you can open up the source and check it out yourself. Super simple.
