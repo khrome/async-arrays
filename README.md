@@ -1,7 +1,9 @@
 async-arrays.js
 ===============
 
-Flow control and array utility.
+This used to be an array-oriented flow control library. While it still is, [async]() does it better.
+
+Now it's just something to use when I want something more lightweight. YMMV
 
 Usage
 -----
