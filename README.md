@@ -1,6 +1,10 @@
 async-arrays.js
 ===============
 
+[![NPM version](https://img.shields.io/npm/v/async-arrays.svg)]()
+[![npm](https://img.shields.io/npm/dt/async-arrays.svg)]()
+[![Travis](https://img.shields.io/travis/khrome/async-arrays.svg)]()
+
 This used to be an array-oriented flow control library. While it still is, [async]() does it better.
 
 Now it's just something to use when I want something more lightweight. YMMV
