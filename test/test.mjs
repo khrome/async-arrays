@@ -1,5 +1,7 @@
-var should = require("should");
-require('./async-arrays').proto();
+import * as arrays from '../async-arrays.mjs';
+import { chai } from 'environment-safe-chai'
+const should = chai.should();
+arrays.proto();
 
 describe('async-arrays', function(){
     
