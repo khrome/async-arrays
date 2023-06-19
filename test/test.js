@@ -1,5 +1,5 @@
 var should = require("should");
-require('../async-arrays').proto();
+require('../async-arrays.cjs').proto();
 
 describe('async-arrays', function(){
     
